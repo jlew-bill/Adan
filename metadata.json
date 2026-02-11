@@ -1,0 +1,7 @@
+{
+  "name": "Kinematic Engine v1.0",
+  "description": "A shape-first semantic processor that treats language as geometry. Analyze words as mechanical assemblies and queries as topological equations using Kinematic Linguistics and Semantics.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
