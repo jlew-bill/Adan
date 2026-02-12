@@ -88,6 +88,7 @@ export class AdaEngine {
                 "misconception": [0-1],
                 "entity": "Primary entity being discussed",
                 "equation": "e.g. capital(France) = Paris",
+                "definition": "A concise kinematic definition of the primary entity.",
                 "response": "Your full response here, addressing misconceptions and solving the query.",
                 "synonyms": ["list", "of", "relevant", "synonyms"],
                 "antonyms": ["list", "of", "relevant", "antonyms"],
@@ -107,12 +108,13 @@ export class AdaEngine {
                         misconception: { type: Type.NUMBER },
                         entity: { type: Type.STRING },
                         equation: { type: Type.STRING },
+                        definition: { type: Type.STRING },
                         response: { type: Type.STRING },
                         synonyms: { type: Type.ARRAY, items: { type: Type.STRING } },
                         antonyms: { type: Type.ARRAY, items: { type: Type.STRING } },
                         action: { type: Type.STRING }
                     },
-                    required: ["correctness", "misconception", "entity", "equation", "response", "synonyms", "antonyms", "action"]
+                    required: ["correctness", "misconception", "entity", "equation", "definition", "response", "synonyms", "antonyms", "action"]
                 },
                 systemInstruction: `You are Ada. You solve semantic equations. Never stop at an error; always resolve the signal into a truthful trajectory. Current Date Context: 2026.`
             }
@@ -160,7 +162,8 @@ export class AdaEngine {
             lexical: {
                 synonyms: evalData.synonyms,
                 antonyms: evalData.antonyms,
-                equation: evalData.equation
+                equation: evalData.equation,
+                definition: evalData.definition
             },
             csv: { c, m, f, k, state },
             constraint: { status, ratio },

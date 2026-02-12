@@ -77,6 +77,8 @@ export interface LexicalNode {
     synonyms: string[];
     antonyms: string[];
     equation: string;
+    // Add missing definition property used in Lexicon logic
+    definition?: string;
 }
 
 export interface SearchResult {

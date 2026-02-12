@@ -15,97 +15,109 @@ const SemanticSolver: React.FC = () => {
         setIsProcessing(true);
         setResult(null);
         
-        // Artificial delay to show engine activity
-        await new Promise(r => setTimeout(r, 800));
+        await new Promise(r => setTimeout(r, 600));
         const res = await engine.process(query);
         setResult(res);
         setIsProcessing(false);
     };
 
     return (
-        <div className="p-4 max-w-4xl mx-auto flex flex-col gap-6 animate-in zoom-in-95 duration-500">
-            <div className="glass-panel p-1 rounded-full flex items-center shadow-xl border-cyan-500/20">
+        <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-700">
+            {/* Input View */}
+            <div className="glass-card p-1.5 rounded-[40px] flex items-center shadow-lg border-transparent focus-within:ring-2 focus-within:ring-[#007AFF]/20 transition-all">
                 <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleProcess()}
-                    placeholder="Enter natural language query (e.g., 'What is the capital of Japan?')"
-                    className="flex-1 bg-transparent px-6 py-4 focus:outline-none text-lg text-slate-200"
+                    placeholder="Enter natural language query..."
+                    className="flex-1 bg-transparent px-8 py-5 focus:outline-none text-xl text-black dark:text-white font-medium placeholder:text-black/20 dark:placeholder:text-white/20"
                 />
                 <button
                     onClick={handleProcess}
                     disabled={isProcessing}
-                    className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-full font-bold uppercase tracking-wider transition-all disabled:opacity-50 flex items-center gap-2"
+                    className="bg-black dark:bg-white text-white dark:text-black hover:opacity-90 px-10 py-5 rounded-[32px] font-bold text-[14px] uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md active:scale-95"
                 >
-                    {isProcessing ? 'RESOLVING...' : 'PROCESS'}
+                    {isProcessing ? 'Resolving' : 'Process'}
                 </button>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4 opacity-50">
-                <div className={`p-4 border border-slate-800 rounded flex flex-col items-center text-center transition-all ${result?.tier === 1 ? 'opacity-100 border-green-500/50 bg-green-500/5' : ''}`}>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tier 1</span>
-                    <span className="font-bold text-sm">RIGID PATTERN</span>
-                </div>
-                <div className={`p-4 border border-slate-800 rounded flex flex-col items-center text-center transition-all ${result?.tier === 2 ? 'opacity-100 border-yellow-500/50 bg-yellow-500/5' : ''}`}>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tier 2</span>
-                    <span className="font-bold text-sm">SEMANTIC RESONANCE</span>
-                </div>
-                <div className={`p-4 border border-slate-800 rounded flex flex-col items-center text-center transition-all ${result?.tier === 3 ? 'opacity-100 border-red-500/50 bg-red-500/5' : ''}`}>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tier 3</span>
-                    <span className="font-bold text-sm">VECTOR LATENCY</span>
-                </div>
+            {/* Tier Indicator */}
+            <div className="grid grid-cols-3 gap-6">
+                {[
+                    { t: 1, label: 'Rigid' },
+                    { t: 2, label: 'Resonant' },
+                    { t: 3, label: 'Latent' }
+                ].map((tier) => (
+                    <div key={tier.t} className={`py-4 px-6 border rounded-[20px] text-center transition-all duration-500 ${
+                        result?.tier === tier.t 
+                        ? 'bg-[#007AFF]/10 border-[#007AFF] shadow-sm' 
+                        : 'bg-black/5 dark:bg-black/20 border-transparent opacity-40'
+                    }`}>
+                        <span className="text-[10px] font-black text-black/30 dark:text-white/30 uppercase tracking-widest block mb-1">Method {tier.t}</span>
+                        <span className="text-[13px] font-bold text-black dark:text-white">{tier.label}</span>
+                    </div>
+                ))}
             </div>
 
-            {result && (
-                <div className="glass-panel p-8 border-t-4 border-t-cyan-500 rounded-lg animate-in fade-in slide-in-from-top-4 duration-700">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                        <div>
-                            <span className="text-[10px] text-slate-500 uppercase tracking-[0.3em]">Resolved Shape</span>
-                            <h2 className="text-3xl font-black text-cyan-400 mono tracking-tighter uppercase">{result.shape === QueryShape.UNKNOWN ? 'Novel Topology' : result.shape}</h2>
+            {/* Result Display */}
+            {result ? (
+                <div className="glass-card p-10 rounded-[40px] animate-in slide-in-from-top-6 duration-700">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12 border-b border-black/[0.05] dark:border-white/[0.05] pb-10">
+                        <div className="space-y-2">
+                            <span className="text-[12px] font-bold text-black/30 dark:text-white/30 uppercase tracking-[0.2em]">Normalized Topology</span>
+                            <h2 className="text-4xl font-bold text-black dark:text-white tracking-tight capitalize">
+                                {result.shape === QueryShape.UNKNOWN ? 'Novel Equation' : result.shape.split('(')[0]}
+                            </h2>
                         </div>
-                        <div className="text-right">
-                            <span className="text-[10px] text-slate-500 uppercase tracking-[0.3em]">Confidence</span>
-                            <div className="text-2xl font-bold mono text-white">{(result.confidence * 100).toFixed(1)}%</div>
+                        <div className="bg-black/5 dark:bg-white/5 px-6 py-4 rounded-[24px] border border-black/10 dark:border-white/5 text-center">
+                            <span className="text-[10px] font-bold text-black/30 dark:text-white/30 uppercase tracking-widest block mb-1">Confidence</span>
+                            <div className="text-2xl font-bold text-black dark:text-white">{(result.confidence * 100).toFixed(0)}%</div>
                         </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8 mb-8">
-                        <div>
-                            <label className="text-[10px] text-slate-500 uppercase tracking-widest block mb-2">Signal Method</label>
-                            <p className="text-slate-300 font-medium">{result.method}</p>
-                            <p className="text-slate-500 text-sm mt-1">{result.details}</p>
+                    <div className="grid md:grid-cols-2 gap-12 mb-10">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[11px] font-bold text-black/30 dark:text-white/30 uppercase tracking-widest block mb-2">Algorithm</label>
+                                <p className="text-[16px] text-black dark:text-white font-medium">{result.method}</p>
+                            </div>
+                            <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/5">
+                                <p className="text-[13px] text-black/60 dark:text-white/60 leading-relaxed italic">{result.details}</p>
+                            </div>
                         </div>
-                        <div>
-                            <label className="text-[10px] text-slate-500 uppercase tracking-widest block mb-2">Extracted Entity</label>
-                            <div className="bg-slate-900/50 px-4 py-2 border border-slate-800 rounded inline-block text-cyan-300 font-bold tracking-wider">
+                        
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-bold text-black/30 dark:text-white/30 uppercase tracking-widest block mb-2">Subject Mapping</label>
+                            <div className="bg-[#007AFF] px-6 py-3 rounded-2xl text-white font-bold text-xl inline-block shadow-lg">
                                 {result.entity}
                             </div>
                         </div>
                     </div>
 
                     {result.geminiInsight && (
-                        <div className="p-4 bg-cyan-950/20 border border-cyan-900/50 rounded-lg">
-                            <label className="text-[10px] text-cyan-500 uppercase tracking-widest block mb-2">Kinematic Latent Insight (Gemini)</label>
-                            <p className="text-cyan-100/80 italic text-sm leading-relaxed">
+                        <div className="p-6 bg-black/[0.02] dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded-[28px] space-y-3">
+                            <label className="text-[11px] font-bold text-black/30 dark:text-white/30 uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#007AFF]"></span>
+                                Semantic Insight
+                            </label>
+                            <p className="text-black/80 dark:text-white/80 text-[15px] leading-relaxed font-normal">
                                 {result.geminiInsight}
                             </p>
                         </div>
                     )}
 
-                    <div className="mt-8 pt-8 border-t border-slate-800">
-                        <label className="text-[10px] text-slate-500 uppercase tracking-widest block mb-2">Equation Normalization</label>
-                        <div className="font-mono text-lg text-slate-400">
-                            {result.shape !== QueryShape.UNKNOWN ? result.shape.replace('X', result.entity) : '∫ topology(signal) dθ ≈ ???'}
+                    <div className="mt-12 pt-8 border-t border-black/[0.05] dark:border-white/[0.05] flex justify-between items-center">
+                        <div className="mono text-[14px] text-black/20 dark:text-white/20 uppercase tracking-widest">Structural Output</div>
+                        <div className="mono text-[16px] text-[#007AFF] font-bold">
+                            {result.shape !== QueryShape.UNKNOWN ? result.shape.replace('X', result.entity) : '∫ topology(signal)'}
                         </div>
                     </div>
                 </div>
-            )}
-
-            {!result && !isProcessing && (
-                <div className="text-center py-20 opacity-20 select-none">
-                    <div className="text-6xl mb-4">∑</div>
-                    <p className="mono uppercase tracking-[0.5em]">Awaiting signal for processing...</p>
+            ) : !isProcessing && (
+                <div className="text-center py-20 opacity-10 select-none animate-pulse">
+                    <p className="text-7xl font-bold tracking-tighter text-black dark:text-white">Ready</p>
+                    <p className="text-sm font-medium mt-4 uppercase tracking-[0.4em] text-black/60 dark:text-white/60">Awaiting Signal Frequency</p>
                 </div>
             )}
         </div>

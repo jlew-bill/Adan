@@ -23,63 +23,70 @@ const WordMechanic: React.FC = () => {
     ], [analysis]);
 
     return (
-        <div className="p-4 flex flex-col gap-8 animate-in slide-in-from-bottom-4 duration-700">
-            <div className="max-w-2xl mx-auto w-full">
+        <div className="space-y-12 animate-in fade-in duration-1000">
+            <div className="max-w-xl mx-auto">
+                <div className="text-center mb-4">
+                    <label className="text-[11px] font-bold text-black/30 dark:text-white/30 uppercase tracking-[0.2em]">Kinematic Assembly Input</label>
+                </div>
                 <input
                     type="text"
                     value={word}
                     onChange={(e) => setWord(e.target.value.toUpperCase().slice(0, 15))}
-                    placeholder="ENTER WORD FOR ASSEMBLY ANALYSIS..."
-                    className="w-full bg-slate-950 border-2 border-slate-800 p-4 text-center text-4xl font-black mono tracking-[0.5em] text-cyan-400 focus:outline-none focus:border-cyan-500/50 placeholder:text-slate-800 transition-all shadow-inner"
+                    placeholder="ENTER WORD..."
+                    className="w-full bg-black/5 dark:bg-white/5 rounded-3xl border border-black/10 dark:border-white/10 px-8 py-6 text-center text-5xl font-bold tracking-tight text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 placeholder:text-black/5 transition-all"
                 />
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-8">
-                {/* Visualization of Load Path */}
-                <div className="glass-panel p-6 flex flex-col justify-between">
-                    <div>
-                        <h3 className="text-[10px] uppercase text-slate-500 tracking-[0.3em] mb-6">Load Path Assembly</h3>
-                        <div className="flex flex-wrap items-center gap-3">
+            <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+                {/* Assembly Path */}
+                <div className="glass-card p-10 rounded-[40px] flex flex-col justify-between space-y-12">
+                    <div className="space-y-6">
+                        <h3 className="text-[12px] font-bold text-black/40 dark:text-white/40 uppercase tracking-widest">Assembly Schema</h3>
+                        <div className="flex flex-wrap items-center gap-4">
                             {analysis.glyphs.map((g, i) => (
                                 <React.Fragment key={i}>
-                                    <div className="flex flex-col items-center group cursor-help">
-                                        <div className="w-10 h-10 flex items-center justify-center border border-cyan-500/30 text-cyan-400 font-bold mono bg-cyan-950/20 group-hover:bg-cyan-500/20 transition-colors">
+                                    <div className="flex flex-col items-center group">
+                                        <div className="w-12 h-12 flex items-center justify-center rounded-2xl border border-black/10 dark:border-white/10 text-black dark:text-white font-bold mono bg-black/5 dark:bg-white/5 group-hover:bg-black/10 dark:group-hover:bg-white/10 transition-all shadow-sm">
                                             {g.char}
                                         </div>
-                                        <div className="text-[8px] text-slate-500 mt-1 uppercase whitespace-nowrap overflow-hidden max-w-[40px] text-center">
-                                            {g.role}
+                                        <div className="text-[9px] font-semibold text-black/30 dark:text-white/30 mt-2 uppercase tracking-tight">
+                                            {g.role.split(' ')[0]}
                                         </div>
                                     </div>
                                     {i < analysis.glyphs.length - 1 && (
-                                        <div className="text-slate-800 text-xl">→</div>
+                                        <div className="text-black/10 dark:text-white/10 text-xl font-thin px-1">→</div>
                                     )}
                                 </React.Fragment>
                             ))}
                         </div>
                     </div>
 
-                    <div className="mt-8">
-                        <h3 className="text-[10px] uppercase text-slate-500 tracking-[0.3em] mb-2">Structural Archetype</h3>
-                        <div className="text-2xl font-bold text-white tracking-widest bg-slate-800/30 px-4 py-2 border-l-2 border-cyan-500 inline-block">
+                    <div className="space-y-3 pt-8 border-t border-black/[0.05] dark:border-white/[0.05]">
+                        <h3 className="text-[12px] font-bold text-black/40 dark:text-white/40 uppercase tracking-widest">Archetype Classification</h3>
+                        <div className="text-3xl font-bold text-[#007AFF] tracking-tight py-2 inline-block">
                             {analysis.profile}
                         </div>
+                        <p className="text-sm text-black/40 dark:text-white/40 leading-relaxed max-w-sm">
+                            Calculated through glyph vector aggregation and load distribution analysis.
+                        </p>
                     </div>
                 </div>
 
-                {/* Radar Chart Profile */}
-                <div className="glass-panel p-6 h-[400px]">
-                    <h3 className="text-[10px] uppercase text-slate-500 tracking-[0.3em] mb-2">Mechanical Profile</h3>
+                {/* Data Profile */}
+                <div className="glass-card p-10 rounded-[40px] h-[500px] relative overflow-hidden">
+                    <h3 className="text-[12px] font-bold text-black/40 dark:text-white/40 uppercase tracking-widest absolute top-10 left-10">Mechanical Profile</h3>
                     <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
-                            <PolarGrid stroke="#334155" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 10 }} />
+                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+                            <PolarGrid />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'currentColor', fontSize: 11, fontWeight: 600, opacity: 0.5 }} />
                             <PolarRadiusAxis angle={30} domain={[0, 'auto']} axisLine={false} tick={false} />
                             <Radar
-                                name="Physicality"
+                                name="Profile"
                                 dataKey="A"
-                                stroke="#22d3ee"
-                                fill="#0891b2"
-                                fillOpacity={0.6}
+                                stroke="#007AFF"
+                                strokeWidth={3}
+                                fill="#007AFF"
+                                fillOpacity={0.2}
                             />
                         </RadarChart>
                     </ResponsiveContainer>

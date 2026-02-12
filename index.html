@@ -4,33 +4,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinematic Engine v1.0</title>
+    <title>Ada Computing • Kinematic Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'media',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                },
+            },
+        }
+    </script>
     <style>
+        :root {
+            --system-blue: #007aff;
+            color-scheme: light dark;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #020617;
-            color: #f8fafc;
-            overflow-x: hidden;
+            background-color: #ffffff;
+            color: #000000;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.011em;
         }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .blueprint-grid {
-            background-image: 
-                linear-gradient(rgba(30, 58, 138, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(30, 58, 138, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #000000;
+                color: #ffffff;
+            }
         }
-        .glow-cyan { text-shadow: 0 0 10px rgba(34, 211, 238, 0.5); }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(51, 65, 85, 0.5);
+
+        .system-mesh {
+            background: 
+                radial-gradient(at 0% 0%, rgba(0, 122, 255, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(88, 86, 214, 0.05) 0px, transparent 50%);
+            min-height: 100vh;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.04);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .glass-card {
+                background: rgba(28, 28, 30, 0.7);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .ios-segmented-control {
+            background: rgba(118, 118, 128, 0.12);
+            padding: 2px;
+            border-radius: 9px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ios-segmented-control {
+                background: rgba(118, 118, 128, 0.24);
+            }
+        }
+
+        .ios-tab-active {
+            background: #ffffff;
+            box-shadow: 0 3px 8px 0 rgba(0,0,0,0.12), 0 3px 1px 0 rgba(0,0,0,0.04);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ios-tab-active {
+                background: rgba(255, 255, 255, 0.12);
+                box-shadow: 0 3px 8px 0 rgba(0,0,0,0.3), 0 3px 1px 0 rgba(0,0,0,0.1);
+            }
+        }
+
+        /* Recharts Adjustments */
+        .recharts-polar-grid-concentric-path { stroke: currentColor !important; opacity: 0.1; }
+        .recharts-polar-grid-angle-line { stroke: currentColor !important; opacity: 0.1; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+        @media (prefers-color-scheme: dark) {
+            ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+        }
     </style>
 <script type="importmap">
 {
@@ -44,7 +110,7 @@
 }
 </script>
 </head>
-<body class="blueprint-grid min-h-screen">
+<body class="system-mesh">
     <div id="root"></div>
 </body>
 </html>

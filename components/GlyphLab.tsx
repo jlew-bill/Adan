@@ -14,10 +14,10 @@ const GlyphLab: React.FC = () => {
                     <button
                         key={glyph.char}
                         onClick={() => setSelectedGlyph(glyph)}
-                        className={`aspect-square flex items-center justify-center text-3xl mono transition-all border ${
+                        className={`aspect-square flex items-center justify-center text-3xl mono transition-all border rounded-2xl ${
                             selectedGlyph.char === glyph.char 
-                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]' 
-                            : 'bg-slate-900/50 border-slate-800 text-slate-500 hover:border-slate-600'
+                            ? 'bg-[#007AFF]/10 border-[#007AFF] text-[#007AFF] shadow-lg' 
+                            : 'bg-black/5 dark:bg-white/5 border-transparent text-black/40 dark:text-white/40 hover:bg-black/10 dark:hover:bg-white/10'
                         }`}
                     >
                         {glyph.char}
@@ -26,28 +26,28 @@ const GlyphLab: React.FC = () => {
             </div>
 
             {/* Glyph Details */}
-            <div className="lg:w-1/3 glass-panel p-6 border-l-4 border-l-cyan-500 rounded-r-lg">
-                <div className="flex items-center gap-4 mb-6">
-                    <span className="text-7xl font-black mono text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]">
+            <div className="lg:w-1/3 glass-card p-8 rounded-[32px]">
+                <div className="flex items-center gap-6 mb-8">
+                    <span className="text-7xl font-black mono text-[#007AFF]">
                         {selectedGlyph.char}
                     </span>
                     <div>
-                        <h3 className="text-xl font-bold uppercase tracking-widest">{selectedGlyph.role}</h3>
-                        <p className="text-cyan-500 mono text-sm">{selectedGlyph.physics}</p>
+                        <h3 className="text-xl font-bold uppercase tracking-widest text-black dark:text-white">{selectedGlyph.role}</h3>
+                        <p className="text-[#007AFF] mono text-sm font-semibold">{selectedGlyph.physics}</p>
                     </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div>
-                        <label className="text-[10px] uppercase text-slate-500 tracking-[0.2em] block mb-1">Vector Dynamics</label>
-                        <p className="text-slate-300 italic text-sm leading-relaxed">
+                        <label className="text-[10px] uppercase text-black/40 dark:text-white/40 font-bold tracking-[0.2em] block mb-2">Vector Dynamics</label>
+                        <p className="text-black/70 dark:text-white/70 italic text-base leading-relaxed">
                             "{selectedGlyph.vector}"
                         </p>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800">
-                        <label className="text-[10px] uppercase text-slate-500 tracking-[0.2em] block mb-2">Mechanical Schema</label>
-                        <div className="bg-slate-950 p-4 border border-slate-900 rounded font-mono text-[11px] text-cyan-600/60 leading-tight">
+                    <div className="pt-6 border-t border-black/[0.05] dark:border-white/[0.05]">
+                        <label className="text-[10px] uppercase text-black/40 dark:text-white/40 font-bold tracking-[0.2em] block mb-3">Mechanical Schema</label>
+                        <div className="bg-black/5 dark:bg-black/40 p-5 border border-black/5 dark:border-white/5 rounded-2xl font-mono text-[11px] text-[#007AFF]/80 leading-tight">
                             {`// PHYSICS DEFINITION\nENTITY Glyph_${selectedGlyph.char} {\n  ROLE: "${selectedGlyph.role}";\n  PROPERTIES: [${selectedGlyph.physics}];\n  CONSTRAINTS: STATIC;\n}`}
                         </div>
                     </div>
