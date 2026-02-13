@@ -111,3 +111,19 @@ export interface ChatMessage {
     role: 'user' | 'model';
     parts: { text: string }[];
 }
+
+/**
+ * Global AIStudio interface for API Key management.
+ * Defined here to ensure consistent typing across the application.
+ */
+export interface AIStudio {
+  hasSelectedApiKey: () => Promise<boolean>;
+  openSelectKey: () => Promise<void>;
+}
+
+// Augment the global Window interface with the aistudio property.
+declare global {
+  interface Window {
+    aistudio?: AIStudio;
+  }
+}

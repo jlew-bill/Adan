@@ -12,7 +12,11 @@ interface DictionaryEntry {
     antonyms: string[];
 }
 
-const AdaConsole: React.FC = () => {
+interface AdaConsoleProps {
+    onKeyReset?: () => void;
+}
+
+const AdaConsole: React.FC<AdaConsoleProps> = ({ onKeyReset }) => {
     const [input, setInput] = useState('');
     const [history, setHistory] = useState<{ query: string, result: SearchResult }[]>([]);
     const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
@@ -72,26 +76,31 @@ const AdaConsole: React.FC = () => {
                     }, ...prev];
                 });
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Engine failure:", e);
+            if (e.message && e.message.includes("Requested entity was not found")) {
+                onKeyReset?.();
+            }
         } finally {
             setIsThinking(false);
         }
     };
 
     return (
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-220px)] gap-6 relative animate-in fade-in duration-1000">
+        <div className="flex flex-col lg:flex-row h-[calc(100vh-240px)] gap-8 relative animate-in fade-in duration-1000">
             {/* Conversation Area */}
-            <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+            <div className="flex-1 flex flex-col gap-6 overflow-hidden">
                 {/* Status bar */}
-                <div className="flex justify-between items-center px-2 shrink-0">
-                    <div className="flex gap-1.5 ios-segmented-control">
+                <div className="flex justify-between items-center px-1 shrink-0">
+                    <div className="flex gap-1 ios-segmented-control p-1 bg-black/5 dark:bg-white/5 rounded-[12px]">
                         {(['ELI5', 'STANDARD', 'TECHNICAL'] as const).map(lvl => (
                             <button 
                                 key={lvl}
                                 onClick={() => setComplexity(lvl)}
-                                className={`px-4 py-1 text-[11px] font-semibold transition-all rounded-[7px] ${
-                                    complexity === lvl ? 'ios-tab-active text-black dark:text-white' : 'text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/70'
+                                className={`px-4 py-1.5 text-[11px] font-bold transition-all rounded-[8px] ${
+                                    complexity === lvl 
+                                    ? 'bg-white dark:bg-white/15 text-black dark:text-white shadow-sm' 
+                                    : 'text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/70'
                                 }`}
                             >
                                 {lvl}
@@ -99,15 +108,17 @@ const AdaConsole: React.FC = () => {
                         ))}
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                        <span className="text-[11px] font-medium text-black/30 dark:text-white/30 tracking-tight">Clock: {currentTime}</span>
+                    <div className="flex items-center gap-6">
+                        <span className="text-[11px] font-bold text-black/30 dark:text-white/30 tracking-widest uppercase">Signal: {currentTime}</span>
                         <button 
                             onClick={() => setShowLexicon(!showLexicon)}
-                            className={`text-[11px] font-semibold px-4 py-1 rounded-full transition-all border ${
-                                showLexicon ? 'bg-black/5 dark:bg-white/10 border-black/10 dark:border-white/20 text-black dark:text-white' : 'border-black/5 dark:border-white/5 text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60'
+                            className={`text-[11px] font-bold px-4 py-1.5 rounded-full transition-all border ${
+                                showLexicon 
+                                ? 'bg-black dark:bg-white border-transparent text-white dark:text-black' 
+                                : 'bg-white/50 dark:bg-white/5 border-black/10 dark:border-white/10 text-black/60 dark:text-white/60 hover:border-black/20 dark:hover:border-white/20'
                             }`}
                         >
-                            Lexicon ({lexicon.length})
+                            LEXICON ({lexicon.length})
                         </button>
                     </div>
                 </div>
@@ -115,54 +126,63 @@ const AdaConsole: React.FC = () => {
                 {/* Messages List */}
                 <div ref={containerRef} className="flex-1 overflow-y-auto space-y-12 px-2 custom-scrollbar scroll-smooth">
                     {history.length === 0 && !isThinking && (
-                        <div className="h-full flex flex-col items-center justify-center text-black/10 dark:text-white/10 pointer-events-none select-none">
-                            <h2 className="text-7xl font-bold tracking-tighter opacity-10">Ada</h2>
-                            <p className="text-sm font-medium tracking-tight mt-4 uppercase">Ready for Signal</p>
+                        <div className="h-full flex flex-col items-center justify-center text-black/[0.03] dark:text-white/[0.03] pointer-events-none select-none">
+                            <h2 className="text-[120px] font-black tracking-tighter leading-none">ADA</h2>
+                            <p className="text-sm font-black mt-4 uppercase tracking-[0.4em] opacity-40">Ready for Signal Resolution</p>
                         </div>
                     )}
 
                     {history.map((item, idx) => {
                         const isLast = idx === history.length - 1;
                         return (
-                            <div key={idx} ref={isLast ? lastMessageRef : null} className="space-y-6 pt-2">
+                            <div key={idx} ref={isLast ? lastMessageRef : null} className="space-y-8 pt-2">
                                 {/* User Message */}
-                                <div className="flex flex-col items-end animate-in slide-in-from-right-2 duration-300">
-                                    <div className="bg-[#007AFF] px-5 py-3 rounded-[20px] rounded-tr-[4px] text-white text-[15px] font-medium max-w-[85%] shadow-md">
+                                <div className="flex flex-col items-end animate-in slide-in-from-right-4 duration-300">
+                                    <div className="bg-[#007AFF] px-6 py-4 rounded-[28px] rounded-tr-[4px] text-white text-[16px] font-semibold max-w-[80%] shadow-xl shadow-blue-500/10 border border-blue-400/20">
                                         {item.query}
                                     </div>
                                 </div>
 
                                 {/* Ada Message */}
-                                <div className="flex flex-col items-start animate-in slide-in-from-left-2 duration-500">
-                                    <div className="glass-card p-6 rounded-[24px] rounded-tl-[4px] max-w-[95%] space-y-6">
+                                <div className="flex flex-col items-start animate-in slide-in-from-left-4 duration-500">
+                                    <div className="glass-card p-8 rounded-[32px] rounded-tl-[4px] max-w-[95%] space-y-8 border-black/5 dark:border-white/10 shadow-2xl">
                                         {/* Header Info */}
-                                        <div className="flex justify-between items-center border-b border-black/[0.05] dark:border-white/[0.05] pb-3">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase tracking-widest">Topology</span>
-                                                <span className="text-[14px] font-semibold text-black/90 dark:text-white/90 mono">{item.result.lexical?.equation}</span>
+                                        <div className="flex justify-between items-center border-b border-black/[0.05] dark:border-white/[0.05] pb-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-white/5 flex items-center justify-center">
+                                                    <span className="text-[10px] font-black text-[#007AFF]">Ω</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[9px] font-black text-black/30 dark:text-white/30 uppercase tracking-[0.2em]">Kinematic Topology</span>
+                                                    <span className="text-[14px] font-bold text-black/90 dark:text-white/90 mono leading-none">{item.result.lexical?.equation}</span>
+                                                </div>
                                             </div>
-                                            <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                                                item.result.constraint?.status === ConstraintStatus.GREEN ? 'bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400' : 'bg-orange-500/10 border-orange-500/30 text-orange-600 dark:text-orange-400'
+                                            <div className={`text-[10px] font-black px-3 py-1 rounded-full border ${
+                                                item.result.constraint?.status === ConstraintStatus.GREEN ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400' : 'bg-orange-500/10 border-orange-500/30 text-orange-700 dark:text-orange-400'
                                             }`}>
                                                 {item.result.constraint?.status}
                                             </div>
                                         </div>
 
                                         {/* Explanation */}
-                                        <div className="text-[16px] text-black/80 dark:text-white/90 leading-[1.6] font-normal whitespace-pre-wrap">
+                                        <div className="text-[17px] text-black/80 dark:text-white/90 leading-[1.7] font-medium whitespace-pre-wrap">
                                             {item.result.geminiInsight}
                                         </div>
 
                                         {/* Lexical Details */}
                                         {item.result.lexical?.definition && (
-                                            <div className="bg-black/5 dark:bg-white/5 p-4 rounded-[18px] border border-black/5 dark:border-white/5 space-y-4">
+                                            <div className="bg-black/5 dark:bg-black/20 p-6 rounded-[24px] border border-black/5 dark:border-white/5 space-y-5">
                                                 <div>
-                                                    <h5 className="text-[11px] font-bold text-black/30 dark:text-white/30 uppercase tracking-tight mb-1">Definition: {item.result.entity}</h5>
-                                                    <p className="text-[14px] text-black/60 dark:text-white/60 leading-relaxed italic">{item.result.lexical.definition}</p>
+                                                    <h5 className="text-[10px] font-black text-[#007AFF] uppercase tracking-[0.2em] mb-2">Lexical Definition</h5>
+                                                    <p className="text-[15px] text-black/70 dark:text-white/70 leading-relaxed italic font-medium">"{item.result.lexical.definition}"</p>
                                                 </div>
-                                                <div className="flex flex-wrap gap-2">
+                                                <div className="flex flex-wrap gap-2.5">
                                                     {item.result.lexical.synonyms.map(s => (
-                                                        <button key={s} onClick={() => handleSend(`Tell me more about ${s}`)} className="text-[12px] font-medium px-3 py-1 bg-black/5 dark:bg-white/5 rounded-full border border-black/5 dark:border-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70">
+                                                        <button 
+                                                            key={s} 
+                                                            onClick={() => handleSend(`Explore resonance of ${s}`)} 
+                                                            className="text-[12px] font-bold px-4 py-1.5 bg-white dark:bg-white/5 rounded-full border border-black/5 dark:border-white/5 hover:border-[#007AFF] hover:text-[#007AFF] transition-all text-black/60 dark:text-white/60 shadow-sm"
+                                                        >
                                                             {s}
                                                         </button>
                                                     ))}
@@ -171,13 +191,19 @@ const AdaConsole: React.FC = () => {
                                         )}
 
                                         {/* Trajectory */}
-                                        <div className="flex items-center gap-6 pt-4 border-t border-black/[0.05] dark:border-white/[0.05]">
-                                            <div className="flex-1 h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                                                <div style={{ width: `${(item.result.csv?.c || 0) * 100}%` }} className="bg-[#34C759] h-full" />
+                                        <div className="flex items-center gap-8 pt-6 border-t border-black/[0.05] dark:border-white/[0.05]">
+                                            <div className="flex-1 space-y-2">
+                                                <div className="flex justify-between text-[10px] font-black uppercase text-black/30 dark:text-white/30 tracking-widest">
+                                                    <span>Signal Confidence</span>
+                                                    <span>{(item.result.confidence * 100).toFixed(0)}%</span>
+                                                </div>
+                                                <div className="h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden shadow-inner">
+                                                    <div style={{ width: `${(item.result.csv?.c || 0) * 100}%` }} className="bg-[#34C759] h-full shadow-[0_0_8px_rgba(52,199,89,0.4)]" />
+                                                </div>
                                             </div>
-                                            <div className="h-10 w-24 bg-black/5 dark:bg-black/40 rounded-xl border border-black/10 dark:border-white/5 overflow-hidden">
+                                            <div className="h-12 w-28 bg-white dark:bg-black/40 rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden shadow-sm">
                                                 <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                                    <path d={`M ${item.result.trajectoryPoints?.map(p => `${p[0]*100},${100 - p[1]*100}`).join(' L ')}`} fill="none" stroke="#007AFF" strokeWidth="3" />
+                                                    <path d={`M ${item.result.trajectoryPoints?.map(p => `${p[0]*100},${100 - p[1]*100}`).join(' L ')}`} fill="none" stroke="#007AFF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                             </div>
                                         </div>
@@ -188,61 +214,68 @@ const AdaConsole: React.FC = () => {
                     })}
 
                     {isThinking && (
-                        <div ref={lastMessageRef} className="flex items-start animate-pulse pt-2 pb-8">
-                            <div className="glass-card px-6 py-4 rounded-[20px] rounded-tl-[4px] flex items-center gap-4">
-                                <div className="flex gap-1.5">
-                                    <div className="w-1.5 h-1.5 bg-black/20 dark:bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <div className="w-1.5 h-1.5 bg-black/20 dark:bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '200ms' }} />
-                                    <div className="w-1.5 h-1.5 bg-black/20 dark:bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '400ms' }} />
+                        <div ref={lastMessageRef} className="flex items-start animate-pulse pt-2 pb-12">
+                            <div className="glass-card px-8 py-5 rounded-[24px] rounded-tl-[4px] flex items-center gap-5 border-black/5 dark:border-white/10 shadow-lg">
+                                <div className="flex gap-2">
+                                    <div className="w-2 h-2 bg-[#007AFF] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <div className="w-2 h-2 bg-[#007AFF] rounded-full animate-bounce" style={{ animationDelay: '200ms' }} />
+                                    <div className="w-2 h-2 bg-[#007AFF] rounded-full animate-bounce" style={{ animationDelay: '400ms' }} />
                                 </div>
-                                <span className="text-[13px] font-medium text-black/40 dark:text-white/40">Ada is processing...</span>
+                                <span className="text-[14px] font-bold text-black/50 dark:text-white/50 uppercase tracking-[0.2em]">Resolving Manifold...</span>
                             </div>
                         </div>
                     )}
-                    <div className="h-24 shrink-0" />
+                    <div className="h-32 shrink-0" />
                 </div>
 
-                {/* Input Control */}
-                <div className="mt-auto px-2 pb-2 shrink-0">
-                    <div className="glass-card flex items-center p-2 rounded-[30px] shadow-lg border-transparent focus-within:ring-2 focus-within:ring-[#007AFF]/20 transition-all">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder="Type a message..."
-                            className="flex-1 bg-transparent px-6 py-3 focus:outline-none text-[16px] text-black dark:text-white placeholder:text-black/20 dark:placeholder:text-white/20"
-                        />
-                        <button
-                            onClick={() => handleSend()}
-                            disabled={isThinking || !input.trim()}
-                            className="bg-[#007AFF] hover:bg-[#006EE6] disabled:bg-black/10 dark:disabled:bg-white/5 disabled:opacity-20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md active:scale-95"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14M12 5l7 7-7 7" /></svg>
-                        </button>
+                {/* Input Control - Minimalist, High-Contrast design */}
+                <div className="mt-auto px-4 pb-4 shrink-0">
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-[40px] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
+                        <div className="relative bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-3xl flex items-center p-2.5 rounded-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.4)] border-transparent ring-1 ring-black/5 dark:ring-white/10 focus-within:ring-2 focus-within:ring-[#007AFF]/30 transition-all">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                                placeholder="Query the kinematic engine..."
+                                className="flex-1 bg-transparent px-8 py-4 focus:outline-none text-[17px] text-black dark:text-white font-medium placeholder:text-black/20 dark:placeholder:text-white/20"
+                            />
+                            <button
+                                onClick={() => handleSend()}
+                                disabled={isThinking || !input.trim()}
+                                className="bg-[#007AFF] hover:bg-[#006EE6] disabled:bg-black/10 dark:disabled:bg-white/5 disabled:opacity-20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-xl shadow-blue-500/20 active:scale-90 hover:scale-105"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14M12 5l7 7-7 7" /></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Sidebar Lexicon */}
             {showLexicon && (
-                <div className="w-full lg:w-80 glass-card rounded-[24px] flex flex-col animate-in slide-in-from-right-4 duration-500 overflow-hidden">
-                    <div className="p-5 border-b border-black/[0.05] dark:border-white/[0.05] bg-black/[0.02] flex justify-between items-center">
-                        <h3 className="text-sm font-bold tracking-tight uppercase text-black/40 dark:text-white/40">Lexicon</h3>
-                        <button onClick={() => setShowLexicon(false)} className="text-black/20 dark:text-white/20 hover:text-black/60 dark:hover:text-white/60 text-lg">✕</button>
+                <div className="w-full lg:w-96 glass-card rounded-[40px] flex flex-col animate-in slide-in-from-right-8 duration-700 overflow-hidden shadow-2xl border-black/5 dark:border-white/10">
+                    <div className="p-7 border-b border-black/[0.05] dark:border-white/[0.05] bg-black/[0.02] dark:bg-black/40 flex justify-between items-center">
+                        <div className="flex flex-col">
+                            <h3 className="text-[12px] font-black tracking-[0.2em] uppercase text-black/40 dark:text-white/40">Resolved Lexicon</h3>
+                            <span className="text-[10px] font-bold text-[#007AFF] uppercase">Static Cache active</span>
+                        </div>
+                        <button onClick={() => setShowLexicon(false)} className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors">✕</button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-7 space-y-8 custom-scrollbar">
                         {lexicon.length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-center py-10 opacity-10">
-                                <p className="text-sm font-medium text-black dark:text-white">No terms resolved.</p>
+                            <div className="h-full flex flex-col items-center justify-center text-center py-20 opacity-20 select-none">
+                                <div className="text-4xl mb-4">∅</div>
+                                <p className="text-[11px] font-black uppercase tracking-widest">Awaiting Entity Resolution</p>
                             </div>
                         ) : lexicon.map((entry, eIdx) => (
-                            <div key={eIdx} className="space-y-2 group">
-                                <div className="flex justify-between items-center border-b border-black/[0.05] dark:border-white/[0.05] pb-2">
-                                    <span className="text-[15px] font-bold text-black/90 dark:text-white/90">{entry.word}</span>
-                                    <button onClick={() => handleSend(`Define ${entry.word}`)} className="text-[10px] font-bold text-[#007AFF] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Define</button>
+                            <div key={eIdx} className="space-y-3 group">
+                                <div className="flex justify-between items-end border-b border-black/[0.05] dark:border-white/[0.05] pb-2 transition-colors group-hover:border-[#007AFF]/30">
+                                    <span className="text-[17px] font-bold text-black dark:text-white group-hover:text-[#007AFF] transition-colors">{entry.word}</span>
+                                    <button onClick={() => handleSend(`Deconstruct ${entry.word}`)} className="text-[9px] font-black text-[#007AFF] opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest hover:underline">Deconstruct</button>
                                 </div>
-                                <p className="text-[13px] text-black/50 dark:text-white/50 leading-relaxed font-normal">{entry.definition}</p>
+                                <p className="text-[14px] text-black/60 dark:text-white/50 leading-relaxed font-medium">{entry.definition}</p>
                             </div>
                         ))}
                     </div>
